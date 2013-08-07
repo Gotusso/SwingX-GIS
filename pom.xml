@@ -2,122 +2,60 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.swinglabs</groupId>
-    <artifactId>swingx-ws</artifactId>
-    <version>1.6.2</version>
-    <name>SwingLabs Swing Components For Web and Web Services</name>
-    <description>SwingX-WS contains a set of JavaBeans for interacting with web services. Initial beans include support for several Yahoo and Google webservices such as searching news, video, images, and financial data, as well as a generic tile based mapping component (as seen in the Aerith demo at JavaOne 2006), The SwingX-WS beans have been designed with graphical configuration in mind and work very well inside of a JavaBeans aware editor such as NetBeans.</description>
+    <artifactId>swingx-gis</artifactId>
+    <version>1.6.3-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>SwingLabs Swing GIS Components</name>
+    <description>SwingX map component</description>
 
     <properties>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <compile.action>compile</compile.action>
-        <package.action>prepare-to-maven-local</package.action>
+        <swingx.version>1.6.3</swingx.version>
     </properties>
-    <repositories>
-        <repository>
-            <id>swissms-releases</id>
-            <name>Swiss Mobility Solutions Release Repository</name>
-            <url>http://maven/repository/</url>
-            <layout>default</layout>
-        </repository>
-        <repository>
-            <id>swissms-snapshots</id>
-            <name>Swiss Mobility Solutions Snapshots Repository</name>
-            <url>http://maven/snapshots.repository/</url>
-            <layout>default</layout>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-    <distributionManagement>
-        <downloadUrl>http://www.swissmobilitysolutions.com</downloadUrl>
-        <repository>
-            <id>swissms-releases</id>
-            <name>Swiss Mobility Solutions Release Repository</name>
-            <url>dav:http://maven/repository/</url>
-        </repository>
-        <snapshotRepository>
-            <id>swissms-snapshots</id>
-            <name>Swiss Mobility Solutions Snapshots Repository</name>
-            <url>dav:http://maven/snapshots.repository/</url>
-        </snapshotRepository>
-    </distributionManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.swinglabs.swingx</groupId>
+            <artifactId>swingx-all</artifactId>
+            <version>${swingx.version}</version>
+        </dependency>
+    </dependencies>
 
     <build>
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-webdav</artifactId>
-                <version>1.0-beta-2</version>
-            </extension>
-        </extensions>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <targetPath>resources</targetPath>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.0</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.7</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>ant-contrib</groupId>
-                        <artifactId>ant-contrib</artifactId>
-                        <version>1.0b3</version>
-                        <exclusions>
-                            <exclusion>
-                                <groupId>ant</groupId>
-                                <artifactId>ant</artifactId>
-                            </exclusion>
-                        </exclusions>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.ant</groupId>
-                        <artifactId>ant-nodeps</artifactId>
-                        <version>1.8.1</version>
-                    </dependency>
-                </dependencies>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>package</id>
-                        <phase>package</phase>
+                        <id>attach-sources</id>
                         <goals>
-                            <goal>run</goal>
+                            <goal>jar</goal>
                         </goals>
-                        <configuration>
-                            <tasks>
-                                <property name="project.version" value="${project.version}"/>
-                                <ant antfile="build.xml" target="${package.action}" />
-                            </tasks>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
             <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>2.3</version>
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>build</directory>
-                        </fileset>
-                        <fileset>
-                            <directory>dist</directory>
-                        </fileset>
-                    </filesets>
-                </configuration>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
-    <packaging>pom</packaging>
 </project>
