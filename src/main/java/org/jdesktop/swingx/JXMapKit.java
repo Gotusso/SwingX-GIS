@@ -63,14 +63,22 @@ public class JXMapKit extends JXPanel {
     private boolean zoomButtonsVisible = true;
     private final boolean sliderReversed = false;
 
+    private boolean addressLocationShown = false;
+    private boolean dataProviderCreditShown = false;
+
+    private JXMapViewer mainMap;
+    private JXMapViewer miniMap;
+    private JPanel leftControlPanel;
+    private JPanel rightControlPanel;
+    private JButton zoomInButton;
+    private JButton zoomOutButton;
+    private JSlider zoomSlider;
+
     public enum DefaultProviders {
         SwingLabsBlueMarble, OpenStreetMaps, Custom
     };
 
     private DefaultProviders defaultProvider = DefaultProviders.OpenStreetMaps;
-
-    private boolean addressLocationShown = false;
-    private boolean dataProviderCreditShown = false;
 
     /**
      * Creates a new JXMapKit
@@ -368,14 +376,6 @@ public class JXMapKit extends JXPanel {
             setZoom(zoomSlider.getValue());
         }
     }
-
-    private org.jdesktop.swingx.JXMapViewer mainMap;
-    private org.jdesktop.swingx.JXMapViewer miniMap;
-    private JPanel leftControlPanel;
-    private JPanel rightControlPanel;
-    private javax.swing.JButton zoomInButton;
-    private javax.swing.JButton zoomOutButton;
-    private javax.swing.JSlider zoomSlider;
 
     private static void p(final String str) {
         System.out.println(str);

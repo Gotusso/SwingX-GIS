@@ -18,6 +18,7 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
@@ -165,8 +166,10 @@ public class JXMapViewer extends JXPanel implements DesignMode {
     public JXMapViewer() {
         factory = new EmptyTileFactory();
         // setTileFactory(new GoogleTileFactory());
-        MouseInputListener mia = new PanMouseInputListener();
+        setFocusable(true);
+        PanMouseInputListener mia = new PanMouseInputListener();
         setRecenterOnClickEnabled(false);
+
         this.addMouseListener(mia);
         this.addMouseMotionListener(mia);
         this.addMouseWheelListener(new ZoomMouseWheelListener());
@@ -176,7 +179,8 @@ public class JXMapViewer extends JXPanel implements DesignMode {
         try {
             URL url = this.getClass().getResource("/resources/loading.png");
             this.setLoadingImage(ImageIO.read(url));
-        } catch (Throwable ex) {
+        }
+        catch (Throwable ex) {
             System.out.println("could not load 'loading.png'");
             BufferedImage img = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2 = img.createGraphics();
@@ -208,7 +212,8 @@ public class JXMapViewer extends JXPanel implements DesignMode {
 
         if (isDesignTime()) {
 
-        } else {
+        }
+        else {
             int zoom = getZoom();
             Rectangle viewportBounds = getViewportBounds();
             drawMapTiles(g, zoom, viewportBounds);
@@ -294,9 +299,11 @@ public class JXMapViewer extends JXPanel implements DesignMode {
                             g.setColor(getBackground());
                             g.fillRect(ox, oy, size, size);
                         }
-                    } else if (tile.isLoaded()) {
+                    }
+                    else if (tile.isLoaded()) {
                         g.drawImage(tile.getImage(), ox, oy, null);
-                    } else {
+                    }
+                    else {
                         int imageX = (getTileFactory().getTileSize(zoom) - getLoadingImage().getWidth(null)) / 2;
                         int imageY = (getTileFactory().getTileSize(zoom) - getLoadingImage().getHeight(null)) / 2;
                         g.setColor(Color.GRAY);
@@ -877,27 +884,22 @@ public class JXMapViewer extends JXPanel implements DesignMode {
     }
 
     // used to pan using press and drag mouse gestures
-    private class PanMouseInputListener implements MouseInputListener {
+    private class PanMouseInputListener extends MouseAdapter {
         Point prev;
 
         public void mousePressed(MouseEvent evt) {
+            // Request focus to allow mouse input
+            requestFocusInWindow();
+
             // if the middle mouse button is clicked, recenter the view
-            if (isRecenterOnClickEnabled()
-                    && (SwingUtilities.isMiddleMouseButton(evt) || (SwingUtilities.isLeftMouseButton(evt) && evt
-                            .getClickCount() == 2))) {
+            if (isRecenterOnClickEnabled() &&
+               (SwingUtilities.isMiddleMouseButton(evt) || (SwingUtilities.isLeftMouseButton(evt) && evt.getClickCount() == 2))) {
                 recenterMap(evt);
-            } else {
+            }
+            else {
                 // otherwise, just remember this point (for panning)
                 prev = evt.getPoint();
             }
-        }
-
-        private void recenterMap(MouseEvent evt) {
-            Rectangle bounds = getViewportBounds();
-            double x = bounds.getX() + evt.getX();
-            double y = bounds.getY() + evt.getY();
-            setCenter(new Point2D.Double(x, y));
-            repaint();
         }
 
         public void mouseDragged(MouseEvent evt) {
@@ -912,8 +914,7 @@ public class JXMapViewer extends JXPanel implements DesignMode {
                     }
                 }
 
-                int maxHeight = (int) (getTileFactory().getMapSize(getZoom()).getHeight() * getTileFactory()
-                        .getTileSize(getZoom()));
+                int maxHeight = (int) (getTileFactory().getMapSize(getZoom()).getHeight() * getTileFactory().getTileSize(getZoom()));
                 if (y > maxHeight) {
                     y = maxHeight;
                 }
@@ -930,21 +931,12 @@ public class JXMapViewer extends JXPanel implements DesignMode {
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
 
-        public void mouseMoved(MouseEvent e) {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    requestFocusInWindow();
-                }
-            });
-        }
-
-        public void mouseClicked(MouseEvent e) {
-        }
-
-        public void mouseEntered(MouseEvent e) {
-        }
-
-        public void mouseExited(MouseEvent e) {
+        private void recenterMap(MouseEvent evt) {
+            Rectangle bounds = getViewportBounds();
+            double x = bounds.getX() + evt.getX();
+            double y = bounds.getY() + evt.getY();
+            setCenter(new Point2D.Double(x, y));
+            repaint();
         }
     }
 
