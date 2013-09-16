@@ -119,7 +119,7 @@ public class GeoBounds {
      * @return Returns the north west position.
      */
     public GeoPosition getNorthWest() {
-        return new GeoPosition(rects[0].getX(), rects[0].getMaxY());
+        return new GeoPosition(rects[0].getMaxY(), rects[0].getX());
     }
 
     /**
@@ -132,7 +132,45 @@ public class GeoBounds {
         if (rects.length > 1) {
             r = rects[1];
         }
-        return new GeoPosition(r.getMaxX(), r.getY());
+        return new GeoPosition(r.getY(), r.getMaxX());
     }
 
+    /**
+     * Gets center of the smaller bounding box enclosing
+     * north west and south east points.
+     *
+     * @return Returns the center position.
+     */
+    public GeoPosition getCenter() {
+        Rectangle2D r = rects[0];
+        double latitude = r.getCenterY();
+        double longitude = rects.length == 1 ?
+                r.getCenterX():
+                r.getX() + (r.getWidth() + rects[1].getWidth()) / 2;
+
+        return new GeoPosition(latitude, longitude);
+    }
+
+    /**
+     * Gets the width of this bounds in degrees
+     * @return Width in degrees
+     */
+    public double getWidth() {
+        return rects.length == 1 ?
+                rects[0].getWidth():
+                rects[0].getWidth() + rects[1].getWidth();
+    }
+
+    /**
+     * Gets the height of this bounds in degrees
+     * @return Height in degrees
+     */
+    public double getHeight() {
+        return rects[0].getHeight();
+    }
+
+    @Override
+    public String toString() {
+        return getNorthWest() + " - " + getSouthEast();
+    }
 }

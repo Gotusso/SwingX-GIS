@@ -73,11 +73,9 @@ public class MapSearchBox extends JXSearchField {
                     menu.add(new AbstractAction(result.getDisplayName()) {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            Set<GeoPosition> bounds = new HashSet<GeoPosition>();
-                            bounds.add(result.getBounds().getNorthWest());
-                            bounds.add(result.getBounds().getSouthEast());
+                            int zoom = kit.getMainMap().getZoomFor(result.getBounds());
+                            kit.setZoom(zoom);
 
-                            kit.getMainMap().calculateZoomFrom(bounds);
                             kit.setCenterPosition(result.getPosition());
                         }
                     });

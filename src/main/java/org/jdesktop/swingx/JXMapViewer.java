@@ -36,6 +36,7 @@ import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 import javax.swing.event.MouseInputListener;
 
+import org.jdesktop.swingx.mapviewer.GeoBounds;
 import org.jdesktop.swingx.mapviewer.GeoPosition;
 import org.jdesktop.swingx.mapviewer.Tile;
 import org.jdesktop.swingx.mapviewer.TileFactory;
@@ -766,6 +767,37 @@ public class JXMapViewer extends JXPanel implements DesignMode {
     }
 
     /**
+     * Calculates minimum zoom level so that all points in the specified set will be
+     * visible on screen. This is useful if you have a bunch of points in an
+     * area like a city and you want to zoom out so that the entire city and
+     * it's points are visible without panning.
+     *
+     * @param bounds A bounding box for the target area
+     * @return Minimum zoom level to contain it
+     */
+    public int getZoomFor(GeoBounds bounds) {
+        int screenWidth = getWidth();
+        int screenHeight = getHeight();
+
+        TileFactoryInfo info = getTileFactory().getInfo();
+        int minZoom = info.getMinimumZoomLevel();
+        int maxZoom = info.getMaximumZoomLevel();
+
+        for (int zoom = minZoom; zoom < maxZoom; zoom++) {
+            Point2D nw = getTileFactory().geoToPixel(bounds.getNorthWest(), zoom);
+            Point2D se = getTileFactory().geoToPixel(bounds.getSouthEast(), zoom);
+
+            double width = se.getX() - nw.getX();
+            double height = se.getY() - nw.getY();
+            if (width <= screenWidth && height <= screenHeight) {
+                return zoom;
+            }
+        }
+
+        return maxZoom;
+    }
+
+    /**
      * Calculates a zoom level so that all points in the specified set will be
      * visible on screen. This is useful if you have a bunch of points in an
      * area like a city and you want to zoom out so that the entire city and
@@ -773,8 +805,11 @@ public class JXMapViewer extends JXPanel implements DesignMode {
      * 
      * @param positions
      *            A set of GeoPositions to calculate the new zoom from
+     * @deprecated As of 1.6.3, replaced by
+     *              {@link #getZoomFor(GeoBounds)}
      */
-    public void calculateZoomFrom(Set<GeoPosition> positions) {
+    @Deprecated
+    public void calculateZoomFrom(Set <GeoPosition> positions) {
         // u.p("calculating a zoom based on: ");
         // u.p(positions);
         if (positions.size() < 2) {
@@ -808,6 +843,7 @@ public class JXMapViewer extends JXPanel implements DesignMode {
         }
     }
 
+    @Deprecated
     private Rectangle2D generateBoundingRect(final Set<GeoPosition> positions, int zoom) {
         Point2D point1 = getTileFactory().geoToPixel(positions.iterator().next(), zoom);
         Rectangle2D rect = new Rectangle2D.Double(point1.getX(), point1.getY(), 0, 0);
