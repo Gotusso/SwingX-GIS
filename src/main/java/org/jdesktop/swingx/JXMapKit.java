@@ -28,6 +28,8 @@ import org.jdesktop.swingx.mapviewer.bmng.CylindricalProjectionTileFactory;
 import org.jdesktop.swingx.mapviewer.compound.CompoundTileFactory;
 import org.jdesktop.swingx.mapviewer.empty.EmptyTileFactory;
 import org.jdesktop.swingx.mapviewer.openstreetmap.OpenStreetMapTileFactory;
+import org.jdesktop.swingx.mapviewer.tools.search.MapSearchBox;
+import org.jdesktop.swingx.mapviewer.tools.search.NomatimGeocoding;
 import org.jdesktop.swingx.painter.AbstractPainter;
 import org.jdesktop.swingx.painter.CompoundPainter;
 import org.jdesktop.swingx.painter.Painter;
@@ -634,6 +636,33 @@ public class JXMapKit extends JXPanel {
                 factory.setShowLoadingPercent(true);
 
                 kit.getMainMap().setTileFactory(factory);
+
+                final JPanel toolPanel = new JPanel(new VerticalLayout());
+                toolPanel.setOpaque(false);
+
+                final JPanel searchPanel = new JPanel(new HorizontalLayout());
+                searchPanel.setOpaque(false);
+
+                final NomatimGeocoding backend = new NomatimGeocoding();
+                final MapSearchBox searchBox = new MapSearchBox(kit, backend);
+                searchBox.setVisible(false);
+
+                final JToggleButton searchButton = new JToggleButton();
+                searchButton.setAction(new AbstractAction("Search") {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        searchBox.setVisible(searchButton.isSelected());
+                        searchPanel.revalidate();
+                    }
+                });
+
+                searchPanel.add(searchButton);
+                searchPanel.add(searchBox);
+
+                toolPanel.add(searchPanel);
+                toolPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+                kit.getLeftControlPanel().add(toolPanel, 0);
 
                 final JFrame frame = new JFrame("JXMapKit test");
                 frame.add(kit);
