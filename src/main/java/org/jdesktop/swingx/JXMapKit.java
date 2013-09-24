@@ -28,6 +28,8 @@ import org.jdesktop.swingx.mapviewer.bmng.CylindricalProjectionTileFactory;
 import org.jdesktop.swingx.mapviewer.compound.CompoundTileFactory;
 import org.jdesktop.swingx.mapviewer.empty.EmptyTileFactory;
 import org.jdesktop.swingx.mapviewer.openstreetmap.OpenStreetMapTileFactory;
+import org.jdesktop.swingx.mapviewer.tools.scale.MapScale;
+import org.jdesktop.swingx.mapviewer.tools.scale.OrthodromicCalculation;
 import org.jdesktop.swingx.mapviewer.tools.search.MapSearchBox;
 import org.jdesktop.swingx.mapviewer.tools.search.NomatimGeocoding;
 import org.jdesktop.swingx.painter.AbstractPainter;
@@ -65,9 +67,11 @@ public class JXMapKit extends JXPanel {
 
     private boolean addressLocationShown = false;
     private boolean dataProviderCreditShown = false;
+    private boolean scaleShown = false;
 
     private JXMapViewer mainMap;
     private JXMapViewer miniMap;
+    private MapScale mapScale;
     private JPanel leftControlPanel;
     private JPanel rightControlPanel;
     private JButton zoomInButton;
@@ -274,19 +278,35 @@ public class JXMapKit extends JXPanel {
         mainMap.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
         miniMap = new JXMapViewer();
-        miniMap.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
+        miniMap.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        miniMap.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+
         miniMap.setMinimumSize(new Dimension(100, 100));
         miniMap.setMaximumSize(new Dimension(100, 100));
         miniMap.setPreferredSize(new Dimension(100, 100));
-        miniMap.setAlignmentX(Component.RIGHT_ALIGNMENT);
+
+        mapScale = new MapScale(mainMap);
+        mapScale.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        mapScale.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+        mapScale.setFont(mainMap.getFont().deriveFont(11f));
 
         rightControlPanel = new JPanel();
         BoxLayout rightBoxLayout = new BoxLayout(rightControlPanel, BoxLayout.Y_AXIS);
         rightControlPanel.setLayout(rightBoxLayout);
         rightControlPanel.setOpaque(false);
 
+        JPanel rightBottomControlPanel = new JPanel();
+        BoxLayout rightBottomLayout = new BoxLayout(rightBottomControlPanel, BoxLayout.X_AXIS);
+        rightBottomControlPanel.setLayout(rightBottomLayout);
+        rightBottomControlPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        rightBottomControlPanel.setMaximumSize(new Dimension(250, 100));
+        rightBottomControlPanel.setOpaque(false);
+        rightBottomControlPanel.add(Box.createHorizontalGlue());
+        rightBottomControlPanel.add(mapScale);
+        rightBottomControlPanel.add(miniMap);
+
         rightControlPanel.add(Box.createVerticalGlue());
-        rightControlPanel.add(miniMap);
+        rightControlPanel.add(rightBottomControlPanel);
 
         JPanel zoomPanel = new JPanel();
         zoomInButton = new JButton();
@@ -563,6 +583,18 @@ public class JXMapKit extends JXPanel {
         return dataProviderCreditShown;
     }
 
+    public void setScaleShown(final boolean b) {
+        final boolean old = isScaleShown();
+        this.scaleShown = b;
+        mapScale.setVisible(b);
+        repaint();
+        firePropertyChange("scaleShown", old, b);
+    }
+
+    public boolean isScaleShown() {
+        return scaleShown;
+    }
+
     private void rebuildMainMapOverlay() {
         final CompoundPainter cp = new CompoundPainter();
         cp.setCacheable(false);
@@ -630,6 +662,7 @@ public class JXMapKit extends JXPanel {
                 kit.getMainMap().setDrawTileBorders(true);
                 kit.getMainMap().setRestrictOutsidePanning(true);
                 kit.getMainMap().setHorizontalWrapped(false);
+                kit.setScaleShown(true);
 
                 CompoundTileFactory factory = new CompoundTileFactory(kit.getMainMap().getTileFactory());
                 factory.setLayerFactories(new EmptyTileFactory());

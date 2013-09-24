@@ -187,10 +187,6 @@ public class TileFactoryInfo {
         return minimumZoomLevel;
     }
 
-    // public void setMinimumZoomLevel(int minimumZoomLevel) {
-    // this.minimumZoomLevel = minimumZoomLevel;
-    // }
-
     /**
      * 
      * @return
@@ -198,11 +194,6 @@ public class TileFactoryInfo {
     public int getMaximumZoomLevel() {
         return maximumZoomLevel;
     }
-
-    //
-    // public void setMaximumZoomLevel(int maximumZoomLevel) {
-    // this.maximumZoomLevel = maximumZoomLevel;
-    // }
 
     /**
      * 
@@ -212,10 +203,6 @@ public class TileFactoryInfo {
         return totalMapZoom;
     }
 
-    /*
-     * public void setTotalMapZoom(int totalMapZoom) { this.totalMapZoom =
-     * totalMapZoom; }
-     */
     /**
      * 
      * @param zoom
